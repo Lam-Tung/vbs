@@ -1,6 +1,61 @@
--- This file allow to write SQL commands that will be emitted in test and dev.
--- The commands are commented as their support depends of the database
--- insert into myentity (id, field) values(1, 'field-1');
--- insert into myentity (id, field) values(2, 'field-2');
--- insert into myentity (id, field) values(3, 'field-3');
--- alter sequence myentity_seq restart with 4;
+-- sample vehicles
+INSERT INTO vehicle (license_plate, name, manufacturer, model) VALUES
+('A-A-1111', 'Audi A3', 'Audi', 'A3'),
+('B-B-2222', 'BMW X1', 'BMW', 'X1'),
+('C-C-3333', 'VW Golf', 'Volkswagen', 'Golf'),
+('D-D-4444', 'Mercedes C Class', 'Mercedes-Benz', 'C Class'),
+('E-E-5555', 'Skoda Octavia', 'Škoda', 'Octavia'),
+('F-F-6666', 'Seat Leon', 'SEAT', 'Leon'),
+('G-G-7777', 'Fiat Panda', 'FIAT', 'Panda'),
+('H-H-8888', 'Peugeot 208', 'PEUGEOT', '208'),
+('I-I-9999', 'Opel Astra', 'OPEL', 'Astra'),
+('J-J-1234', 'Mini Cooper', 'MINI', 'Cooper'),
+('K-K-2222', 'Ford Focus', 'FORD', 'Focus'),
+('L-L-2323', 'Chevrolet Cruze', 'CHEVROLET', 'Cruze'),
+('M-M-1414', 'Subaru Legacy', 'SUBARU', 'Legacy'),
+('N-N-1515', 'Hyundai Elantra', 'HYUNDAI', 'Elantra'),
+('O-O-1515', 'Kia Optima', 'KIA', 'Optima'),
+('P-P-1515', 'Kia Optima', 'KIA', 'Optima'),
+('Q-Q-1515', 'Infiniti Q50', 'INFINITI', 'Q50'),
+('R-R-1515', 'Infiniti Q50', 'INFINITI', 'Q50'),
+('S-S-1513', 'Acura TLX', 'ACURA', 'TLX'),
+('T-T-1513', 'Acura TLX', 'ACURA', 'TLX'),
+('U-U-5678', 'Nissan Sentra', 'NISSAN', 'Sentra'),
+('V-V-5678', 'Nissan Sentra', 'NISSAN', 'Sentra'),
+('W-W-6799', 'Dodge Charger', 'DODGE', 'Charger'),
+('X-X-1903', 'Chrysler 300', 'CHRYSLER', '300'),
+('Y-Y-1903', 'Chrysler 300', 'CHRYSLER', '300'),
+('Z-Z-1993', 'Buick LaCrosse', 'BUICK', 'LaCrosse');
+
+-- sample users
+INSERT INTO user (email, first_name, last_name) VALUES
+('john.doe@example.com', 'John', 'Doe'),
+('jane.smith@example.com', 'Jane', 'Smith'),
+('bob.johnson@example.com', 'Bob', 'Johnson'),
+('alice.williams@example.com', 'Alice', 'Williams'),
+('charlie.brown@example.com', 'Charlie', 'Brown'),
+('mary.jones@example.com', 'Mary', 'Jones'),
+('james.davis@example.com', 'James', 'Davis'),
+('patricia.miller@example.com', 'Patricia', 'Miller'),
+('robert.wilson@example.com', 'Robert', 'Wilson'),
+('jennifer.moore@example.com', 'Jennifer', 'Moore'),
+('michael.taylor@example.com', 'Michael', 'Taylor'),
+('linda.anderson@example.com', 'Linda', 'Anderson'),
+('william.thomas@example.com', 'William', 'Thomas'),
+('elizabeth.jackson@example.com', 'Elizabeth', 'Jackson'),
+('david.white@example.com', 'David', 'White'),
+('barbara.harris@example.com', 'Barbara', 'Harris'),
+('richard.martin@example.com', 'Richard', 'Martin'),
+('susan.thompson@example.com', 'Susan', 'Thompson'),
+('joseph.garcia@example.com', 'Joseph', 'Garcia'),
+('jessica.martinez@example.com', 'Jessica', 'Martinez'),
+('thomas.robinson@example.com', 'Thomas', 'Robinson'),
+('sarah.clark@example.com', 'Sarah', 'Clark'),
+('charles.rodriguez@example.com', 'Charles', 'Rodriguez'),
+('karen.lewis@example.com', 'Karen', 'Lewis'),
+('james.hernandez@example.com', 'James', 'Hernandez'),
+('patricia.schmidt@example.com', 'Patricia', 'Schmidt'),
+('robert.gonzalez@example.com', 'Robert', 'Gonzalez'),
+('jennifer.reyes@example.com', 'Jennifer', 'Reyes'),
+('michael.pollock@example.com', 'Michael', 'Pollock'),
+('linda.brown@example.com', 'Linda', 'Brown');
