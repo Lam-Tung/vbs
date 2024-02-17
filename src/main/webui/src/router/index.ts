@@ -1,5 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Calender from "../views/Calender.vue";
+import Calender from "@/views/Calender.vue";
+import Vehicles from "@/views/Vehicles.vue";
+import Users from "@/views/Users.vue";
 
 
 const router = createRouter({
@@ -13,10 +15,12 @@ const router = createRouter({
     {
       path: '/vehicles',
       name: 'vehicles',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Vehicles.vue')
+      component: Vehicles
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users
     }
   ]
 })
