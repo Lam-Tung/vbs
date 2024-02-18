@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Calender from "@/views/Calender.vue";
-import Vehicles from "@/views/Vehicles.vue";
-import Users from "@/views/Users.vue";
+import Calender from "../views/Calender.vue";
+import Vehicles from "../views/Vehicles.vue";
+import Users from "../views/Users.vue";
 
 
 const router = createRouter({
