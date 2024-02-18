@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import SideDrawer from "./components/SideDrawer.vue";
+import {VehicleService} from "@/services/vehicle-service";
+import {provide} from "vue";
+import {VehicleServiceKey} from "@/injection-keys";
+import SideDrawer from "@/components/SideDrawer.vue";
+
+const vehicleService = new VehicleService();
+provide(VehicleServiceKey, vehicleService);
 </script>
 
 <template>
