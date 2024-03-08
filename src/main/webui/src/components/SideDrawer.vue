@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 const items = [
   { title: 'Calendar', icon: 'mdi-calendar', to: '/' },
   { title: 'Vehicles', icon: 'mdi-car-multiple', to: '/vehicles' },
-  { title: 'User', icon: 'mdi-account-multiple', to: '/users' },
+  { title: 'Users', icon: 'mdi-account-multiple', to: '/users' },
 ]
 
 const router = useRouter();
