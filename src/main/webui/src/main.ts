@@ -1,13 +1,17 @@
-import '@/assets/main.css'
-import {createApp} from 'vue'
-import App from "@/App.vue";
-import router from "@/router";
-import vuetify from "@/plugins/vuetify";
+import {Aurelia} from 'aurelia-framework';
+import environment from '../config/environment.json';
+import {PLATFORM} from 'aurelia-pal';
 
+export function configure(aurelia: Aurelia): void {
+  aurelia.use
+    .standardConfiguration()
+    .feature(PLATFORM.moduleName('resources/index'));
 
-const app = createApp(App)
+  aurelia.use.developmentLogging(environment.debug ? 'debug' : 'warn');
 
-app.use(router)
-app.use(vuetify)
+  if (environment.testing) {
+    aurelia.use.plugin(PLATFORM.moduleName('aurelia-testing'));
+  }
 
-app.mount('#app')
+  aurelia.start().then(() => aurelia.setRoot(PLATFORM.moduleName('app')));
+}

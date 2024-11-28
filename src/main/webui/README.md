@@ -1,52 +1,33 @@
-# vbs-fe
+# `vbs`
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is bootstrapped by [aurelia-cli](https://github.com/aurelia/cli).
 
-## Recommended IDE Setup
+For more information, go to https://aurelia.io/docs/cli/webpack
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Run dev app
 
-## Type Support for `.vue` Imports in TS
+Run `npm start`, then open `http://localhost:8080`
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+You can change the standard webpack configurations from CLI easily with something like this: `npm start -- --open --port 8888`. However, it is better to change the respective npm scripts or `webpack.config.js` with these options, as per your need.
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+To enable Webpack Bundle Analyzer, do `npm run analyze` (production build).
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+To enable hot module reload, do `npm start -- --hmr`.
 
-## Customize configuration
+To change dev server port, do `npm start -- --port 8888`.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+To change dev server host, do `npm start -- --host 127.0.0.1`
 
-## Project Setup
+**PS:** You could mix all the flags as well, `npm start -- --host 127.0.0.1 --port 7070 --open --hmr`
 
-```sh
-npm install
-```
+For long time aurelia-cli user, you can still use `au run` with those arguments like `au run --env prod --open --hmr`. But `au run` now simply executes `npm start` command.
 
-### Compile and Hot-Reload for Development
+## Build for production
 
-```sh
-npm run dev
-```
+Run `npm run build`, or the old way `au build --env prod`.
 
-### Type-Check, Compile and Minify for Production
+## Unit tests
 
-```sh
-npm run build
-```
+Run `au test` (or `au jest`).
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+To run in watch mode, `au test --watch` or `au jest --watch`.
