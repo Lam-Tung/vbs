@@ -7,6 +7,6 @@ import org.lamiey.entity.Vehicle
 
 @ApplicationScoped
 class VehicleRepository : PanacheRepository<Vehicle> {
-    fun getAllVehicles(pageNumber: Int): List<Vehicle> = findAll().page(Page.of(pageNumber, 10)).list()
-
+    fun getAllVehicles(pageNumber: Int, pageSize: Int): List<Vehicle> =
+            findAll().page(Page.of(pageNumber, pageSize)).list()
 }

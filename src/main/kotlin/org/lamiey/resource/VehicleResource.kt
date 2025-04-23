@@ -13,15 +13,16 @@ import org.lamiey.entity.Vehicle
 import org.lamiey.service.VehicleService
 
 @Path("/api/vehicle")
-class VehicleResource(
-    private val vehicleService: VehicleService
-) {
-    //region GETTER
+class VehicleResource(private val vehicleService: VehicleService) {
+    // region GETTER
     @GET
     @Path("/page/{pageNumber}")
-    fun getVehicles(@RestPath("pageNumber") pageNumber: Int): Response {
+    fun getVehicles(
+            @RestPath("pageNumber") pageNumber: Int,
+            @RestPath("pageSize") pageSize: Int
+    ): Response {
         try {
-            val vehicles: List<Vehicle> = vehicleService.getVehicles(pageNumber)
+            val vehicles: List<Vehicle> = vehicleService.getVehicles(pageNumber, pageSize)
             return Response.ok(vehicles).build()
         } catch (e: WebApplicationException) {
             return e.response
@@ -38,9 +39,9 @@ class VehicleResource(
             return e.response
         }
     }
-    //endregion
+    // endregion
 
-    //region CRUD
+    // region CRUD
     @POST
     fun createVehicle(vehicleDTO: VehicleDTO): Response {
         try {
@@ -70,5 +71,5 @@ class VehicleResource(
             return e.response
         }
     }
-    //endregion
+    // endregion
 }
