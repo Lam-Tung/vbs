@@ -53,7 +53,6 @@ If you want to learn more about building native executables, please consult http
 - JDBC Driver - MariaDB ([guide](https://quarkus.io/guides/datasource)): Connect to the MariaDB database via JDBC
 - Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
 - Hibernate Envers ([guide](https://quarkus.io/guides/hibernate-orm#envers)): Enable Hibernate Envers capabilities in your Jakarta Persistence applications
-- Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Node.js extension which allows serving of single page apps alongside Quarkus.
 
 ## Provided Code
 
@@ -65,13 +64,6 @@ Create your first JPA entity
 
 
 [Related Hibernate with Panache in Kotlin section...](https://quarkus.io/guides/hibernate-orm-panache-kotlin)
-
-### Quinoa
-
-This is a tiny webpack app to get started with Quinoa. It generates a quinoa.html page and a script.
-
-[Related guide section...](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)
-
 
 ### RESTEasy Reactive
 
