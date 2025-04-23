@@ -28,7 +28,7 @@ INSERT INTO vehicle (vin, license_plate, name, manufacturer, model, created, upd
 ('SCCPC11116H503306', 'Z-Z-1993', 'Lotos Various', 'Lotus', 'Various', NOW(), NOW());
 
 -- sample users
-INSERT INTO user (email, first_name, last_name, created, updated) VALUES
+INSERT INTO "user" (email, first_name, last_name, created, updated) VALUES
 ('john.doe@example.com', 'John', 'Doe', NOW(), NOW()),
 ('jane.smith@example.com', 'Jane', 'Smith', NOW(), NOW()),
 ('bob.johnson@example.com', 'Bob', 'Johnson', NOW(), NOW()),

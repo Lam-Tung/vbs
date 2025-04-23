@@ -1,16 +1,16 @@
 package org.lamiey.entity
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "vehicle")
 class Vehicle {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 
-    @Column(name = "vin") lateinit var vin: String
+    @Column(name = "vin", nullable = false) var vin: String? = null
 
     @Column(name = "license_plate") var licensePlate: String? = null
 

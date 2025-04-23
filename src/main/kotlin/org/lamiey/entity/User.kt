@@ -1,16 +1,16 @@
 package org.lamiey.entity
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 
-    @Column(name = "email") var email: String? = null
+    @Column(name = "email", nullable = false) var email: String? = null
 
     @Column(name = "first_name") var firstName: String? = null
 

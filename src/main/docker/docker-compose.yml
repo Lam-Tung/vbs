@@ -1,14 +1,19 @@
 services:
-  db:
-    image: mariadb
+  postgres:
+    image: postgres:latest
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: vbs
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-    volumes:
-      - db_data:/var/lib/mysql
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=vbs
     ports:
-      - "3306:3306"
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - vbs
+
 volumes:
-  db_data: {}
+  postgres-data:
+
+networks:
+  vbs:
