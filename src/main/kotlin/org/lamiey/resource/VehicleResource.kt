@@ -1,6 +1,7 @@
 package org.lamiey.resource
 
 import io.smallrye.mutiny.Uni
+import jakarta.inject.Inject
 import jakarta.ws.rs.*
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestQuery
@@ -9,7 +10,9 @@ import org.lamiey.entity.Vehicle
 import org.lamiey.service.VehicleService
 
 @Path("/api/vehicle")
-class VehicleResource(private val vehicleService: VehicleService) {
+class VehicleResource @Inject constructor(
+    private val vehicleService: VehicleService
+) {
     // region GETTER
     @GET
     @Path("/page")

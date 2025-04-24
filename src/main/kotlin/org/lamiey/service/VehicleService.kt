@@ -25,24 +25,17 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
 
     // region CRUD
     fun createVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> {
-        val vehicleVin = validateVehicleVin(vehicleDTO)
+        val vehicleVin = retrieveVehicleVinFromDTO(vehicleDTO)
+        validateVin(vehicleVin)
 
-        return vehicleRepository.getByVin(vehicleVin)
-            .onItem().transform { existingVehicle ->
-                if (existingVehicle != null) {
-                    throw WebApplicationException(
-                        Response
-                            .status(Response.Status.CONFLICT)
-                            .entity(ErrorResponseDTO("VIN $vehicleVin already exist"))
-                            .build()
-                    )
-                }
+        return vinAlreadyExists(vehicleVin)
+            .onItem().transform {
                 Vehicle().apply {
                     vin = vehicleVin
-                    licensePlate = vehicleDTO.licensePlate
-                    name = vehicleDTO.name
-                    manufacturer = vehicleDTO.manufacturer
-                    model = vehicleDTO.model
+                    licensePlate = vehicleDTO.licensePlate?.trim()
+                    name = vehicleDTO.name?.trim()
+                    manufacturer = vehicleDTO.manufacturer?.trim()
+                    model = vehicleDTO.model?.trim()
                 }
             }
             .onItem().transformToUni { vehicle ->
@@ -54,7 +47,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     }
 
     fun updateVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> {
-            val vehicleId = validateVehicleId(vehicleDTO)
+            val vehicleId = retrieveVehicleIdFromDTO(vehicleDTO)
 
             return vehicleRepository.findById(vehicleId)
                 .onItem().transform { vehicle ->
@@ -68,16 +61,16 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
                     }
 
                     vehicle.apply {
-                        licensePlate = vehicleDTO.licensePlate
-                        name = vehicleDTO.name
-                        manufacturer = vehicleDTO.manufacturer
-                        model = vehicleDTO.model
+                        licensePlate = vehicleDTO.licensePlate?.trim()
+                        name = vehicleDTO.name?.trim()
+                        manufacturer = vehicleDTO.manufacturer?.trim()
+                        model = vehicleDTO.model?.trim()
                     }
                 }
     }
 
     fun deleteVehicle(vehicleDTO: VehicleDTO): Uni<Void> {
-        val vehicleId = validateVehicleId(vehicleDTO)
+        val vehicleId = retrieveVehicleIdFromDTO(vehicleDTO)
 
         return vehicleRepository.findById(vehicleId)
             .onItem().transformToUni { vehicle ->
@@ -92,7 +85,8 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     }
     // endregion
 
-    fun validateVehicleId(vehicleDTO: VehicleDTO): Long = vehicleDTO.id
+    //region RETRIEVE VALUES FROM DTO
+    private fun retrieveVehicleIdFromDTO(vehicleDTO: VehicleDTO): Long = vehicleDTO.id
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
@@ -100,11 +94,39 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
                 .build()
         )
 
-    fun validateVehicleVin(vehicleDTO: VehicleDTO): String = vehicleDTO.vin
+    private fun retrieveVehicleVinFromDTO(vehicleDTO: VehicleDTO): String = vehicleDTO.vin?.trim()
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
                 .entity("Request missing VIN")
                 .build()
         )
+    //endregion
+
+    //region CHECKS
+    private fun validateVin(vin: String) {
+        if (vin.isEmpty() || vin.length != 17) {
+            throw WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Invalid VIN: $vin"))
+                    .build()
+            )
+        }
+    }
+
+    private fun vinAlreadyExists(vin: String): Uni<Boolean> = vehicleRepository.getByVin(vin)
+        .onItem().transformToUni { existingVehicle ->
+            if (existingVehicle != null) {
+                throw WebApplicationException(
+                    Response
+                        .status(Response.Status.CONFLICT)
+                        .entity(ErrorResponseDTO("VIN $vin already exist"))
+                        .build()
+                )
+            }
+
+            Uni.createFrom().item(false)
+        }
+    //endregion
 }
