@@ -10,4 +10,6 @@ import org.lamiey.entity.Vehicle
 class VehicleRepository : PanacheRepository<Vehicle> {
     fun getAllVehicles(pageNumber: Int, pageSize: Int): Uni<List<Vehicle>> =
             findAll().page(Page.of(pageNumber, pageSize)).list()
+
+    fun getByVin(vin: String): Uni<Vehicle?> = find("vin", vin).firstResult()
 }

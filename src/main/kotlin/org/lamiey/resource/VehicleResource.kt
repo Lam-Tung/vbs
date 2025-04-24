@@ -2,7 +2,6 @@ package org.lamiey.resource
 
 import io.smallrye.mutiny.Uni
 import jakarta.ws.rs.*
-import jakarta.ws.rs.core.Response
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestQuery
 import org.lamiey.dto.VehicleDTO
@@ -23,45 +22,16 @@ class VehicleResource(private val vehicleService: VehicleService) {
     @Path("/id/{id}")
     fun getVehicleById(@RestPath("id") @DefaultValue("1") id: Long): Uni<Vehicle> =
         vehicleService.getVehicleById(id)
-
-
     // endregion
 
     // region CRUD
     @POST
-    fun createVehicle(vehicleDTO: VehicleDTO): Uni<Response> = vehicleService.createVehicle(vehicleDTO)
-        .onItem().transform { createdVehicle ->
-            // If the vehicle is created successfully, return a 201 Created response
-            Response.status(Response.Status.CREATED).entity(createdVehicle).build()
-        }
-        .onFailure().recoverWithItem { throwable ->
-            // Handle different types of exceptions and return appropriate responses
-            when (throwable) {
-                is WebApplicationException -> {
-                    throwable.response
-                }
-                else -> {
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("An unexpected error occurred: ${throwable.message}")
-                        .build()
-                }
-            }
-        }
+    fun createVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> = vehicleService.createVehicle(vehicleDTO)
 
     @PUT
-    fun updateVehicle(vehicleDTO: VehicleDTO): Uni<Response> = vehicleService.updateVehicle(vehicleDTO)
-        .onItem().transform { updatedVehicle ->
-            Response.ok(updatedVehicle).build()
-        }
+    fun updateVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> = vehicleService.updateVehicle(vehicleDTO)
 
-//    @DELETE
-//    fun deleteVehicle(vehicleDTO: VehicleDTO): Response {
-//        try {
-//            vehicleService.deleteVehicle(vehicleDTO)
-//            return Response.noContent().build()
-//        } catch (e: WebApplicationException) {
-//            return e.response
-//        }
-//    }
+    @DELETE
+    fun deleteVehicle(vehicleDTO: VehicleDTO): Uni<Void> = vehicleService.deleteVehicle(vehicleDTO)
     // endregion
 }
