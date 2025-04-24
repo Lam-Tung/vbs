@@ -31,17 +31,17 @@ class UserService @Inject constructor(
         val userEmail = retrieveEmailFromDTO(userDTO)
         validateEmail(userEmail)
 
-        return checkIfEmailExists(userEmail)
-            .onItem().transform {
+        return checkIfEmailExists(userEmail, null)
+            .map {
                 User().apply {
                     email = userEmail
                     firstName = userDTO.firstName?.trim()
                     lastName = userDTO.lastName?.trim()
                 }
             }
-            .onItem().transformToUni { user ->
+            .chain { user ->
                 userRepository.persist(user)
-                    .onItem().transform { persistedUser ->
+                    .map { persistedUser ->
                         persistedUser
                     }
             }
@@ -49,10 +49,12 @@ class UserService @Inject constructor(
 
     fun updateUser(userDTO: UserDTO): Uni<User> {
         val userId = retrieveUserIdFromDTO(userDTO)
+        val userEmail = retrieveEmailFromDTO(userDTO)
+        validateEmail(userEmail)
 
         return userRepository.findById(userId)
-            .onItem().transform { user ->
-                if (user == null) {
+            .map { existingUser ->
+                if (existingUser == null) {
                     throw WebApplicationException(
                         Response
                             .status(Response.Status.NOT_FOUND)
@@ -61,10 +63,17 @@ class UserService @Inject constructor(
                     )
                 }
 
-                user.apply {
-                    email = userDTO.email?.trim()
-                    firstName = user.firstName
-                    lastName = user.lastName
+                existingUser
+            }
+            .call { existingUser ->
+                checkIfEmailExists(userEmail, userId)
+                    .replaceWith(existingUser)
+            }
+            .map { existingUser ->
+                existingUser.apply {
+                    email = userEmail
+                    firstName = userDTO.firstName?.trim()
+                    lastName = userDTO.lastName?.trim()
                 }
             }
     }
@@ -73,7 +82,7 @@ class UserService @Inject constructor(
         val userId = retrieveUserIdFromDTO(userDTO)
 
         return userRepository.findById(userId)
-            .onItem().transformToUni { user ->
+            .chain { user ->
                 if (user == null) {
                     throw WebApplicationException(
                         Response.noContent().build()
@@ -116,10 +125,10 @@ class UserService @Inject constructor(
         }
     }
 
-    private fun checkIfEmailExists(email: String): Uni<User?> {
+    private fun checkIfEmailExists(email: String, userId: Long?): Uni<Void> {
         return userRepository.getByEmail(email)
-            .onItem().transform { existingUser ->
-                if (existingUser != null) {
+            .map { existingUser ->
+                if (existingUser != null && existingUser.id != userId) {
                     throw WebApplicationException(
                         Response
                             .status(Response.Status.CONFLICT)
@@ -128,8 +137,9 @@ class UserService @Inject constructor(
                     )
                 }
 
-                existingUser
+                null
             }
+            .replaceWith(Uni.createFrom().voidItem())
     }
     //endregion
 }
