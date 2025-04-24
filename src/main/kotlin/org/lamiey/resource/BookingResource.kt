@@ -31,9 +31,6 @@ class BookingResource @Inject constructor(
     @POST
     fun createBooking(bookingDTO: BookingDTO): Uni<Booking> = bookingService.createBooking(bookingDTO)
 
-//    @PUT
-//    fun updateBooking(bookingDTO: BookingDTO): Uni<Booking> = bookingService.updateBooking(bookingDTO)
-
     @DELETE
     fun deleteBooking(bookingDTO: BookingDTO): Uni<Void> = bookingService.deleteBooking(bookingDTO)
     // endregion
