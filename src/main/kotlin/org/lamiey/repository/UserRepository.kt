@@ -8,7 +8,7 @@ import org.lamiey.entity.User
 
 @ApplicationScoped
 class UserRepository : PanacheRepository<User> {
-    fun getAllUsers(pageNumber: Int, pageSize: Int): Uni<List<User>> =
+    fun getUsersByPage(pageNumber: Int, pageSize: Int): Uni<List<User>> =
         findAll().page(Page.of(pageNumber, pageSize)).list()
 
     fun getByEmail(email: String): Uni<User?> = find("email", email).firstResult()

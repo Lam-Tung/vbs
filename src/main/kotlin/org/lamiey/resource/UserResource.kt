@@ -16,10 +16,10 @@ class UserResource @Inject constructor(
     // region GETTER
     @GET
     @Path("/page")
-    fun getUsers(
+    fun getUsersByPage(
         @RestQuery("pageNumber") @DefaultValue("0") pageNumber: Int,
         @RestQuery("pageSize") @DefaultValue("10") pageSize: Int
-    ): Uni<List<User>> = userService.getUsers(pageNumber, pageSize)
+    ): Uni<List<User>> = userService.getUsersByPage(pageNumber, pageSize)
 
     @GET
     @Path("/id/{id}")

@@ -8,7 +8,9 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "\"user\"")
 class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
     @Column(name = "email", nullable = false, unique = true) var email: String? = null
 
@@ -20,5 +22,7 @@ class User {
     @Column(name = "created", updatable = false)
     var created: LocalDateTime? = null
 
-    @UpdateTimestamp @Column(name = "updated") var updated: LocalDateTime? = null
+    @UpdateTimestamp
+    @Column(name = "updated")
+    var updated: LocalDateTime? = null
 }

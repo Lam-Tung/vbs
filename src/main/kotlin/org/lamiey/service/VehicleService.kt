@@ -16,8 +16,8 @@ import org.lamiey.repository.VehicleRepository
 @WithTransaction
 class VehicleService(private val vehicleRepository: VehicleRepository) {
     // region GETTER
-    fun getVehicles(pageNumber: Int, pageSize: Int): Uni<List<Vehicle>> =
-            vehicleRepository.getAllVehicles(pageNumber, pageSize)
+    fun getVehiclesByPage(pageNumber: Int, pageSize: Int): Uni<List<Vehicle>> =
+            vehicleRepository.getVehiclesByPage(pageNumber, pageSize)
 
 
     fun getVehicleById(id: Long): Uni<Vehicle> = vehicleRepository.findById(id)
