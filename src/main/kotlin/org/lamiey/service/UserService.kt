@@ -90,7 +90,7 @@ class UserService @Inject constructor(
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity(ErrorResponseDTO("Request missing ID"))
+                .entity(ErrorResponseDTO("Request is missing ID"))
                 .build()
         )
 
@@ -98,7 +98,7 @@ class UserService @Inject constructor(
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity(ErrorResponseDTO("Request missing email"))
+                .entity(ErrorResponseDTO("Request is missing email"))
                 .build()
         )
     //endregion

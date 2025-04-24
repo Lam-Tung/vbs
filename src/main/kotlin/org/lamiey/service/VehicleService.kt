@@ -90,7 +90,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity("Request missing ID")
+                .entity("Request is missing ID")
                 .build()
         )
 
@@ -98,7 +98,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity("Request missing VIN")
+                .entity("Request is missing VIN")
                 .build()
         )
     //endregion
