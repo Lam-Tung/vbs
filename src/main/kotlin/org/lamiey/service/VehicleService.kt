@@ -29,7 +29,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         validateVin(vehicleVin)
 
         return vinAlreadyExists(vehicleVin)
-            .onItem().transform {
+            .map {
                 Vehicle().apply {
                     vin = vehicleVin
                     licensePlate = vehicleDTO.licensePlate?.trim()
@@ -38,9 +38,9 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
                     model = vehicleDTO.model?.trim()
                 }
             }
-            .onItem().transformToUni { vehicle ->
+            .chain { vehicle ->
                 vehicleRepository.persist(vehicle)
-                    .onItem().transform { persistedVehicle ->
+                    .map { persistedVehicle ->
                         persistedVehicle
                     }
             }
@@ -50,7 +50,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
             val vehicleId = retrieveVehicleIdFromDTO(vehicleDTO)
 
             return vehicleRepository.findById(vehicleId)
-                .onItem().transform { vehicle ->
+                .map { vehicle ->
                     if (vehicle == null) {
                         throw WebApplicationException(
                             Response
@@ -73,7 +73,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         val vehicleId = retrieveVehicleIdFromDTO(vehicleDTO)
 
         return vehicleRepository.findById(vehicleId)
-            .onItem().transformToUni { vehicle ->
+            .chain { vehicle ->
                 if (vehicle == null) {
                     throw WebApplicationException(
                         Response.noContent().build()
@@ -116,7 +116,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     }
 
     private fun vinAlreadyExists(vin: String): Uni<Boolean> = vehicleRepository.getByVin(vin)
-        .onItem().transformToUni { existingVehicle ->
+        .chain { existingVehicle ->
             if (existingVehicle != null) {
                 throw WebApplicationException(
                     Response
