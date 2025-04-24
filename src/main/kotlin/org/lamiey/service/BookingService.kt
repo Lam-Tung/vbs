@@ -11,6 +11,7 @@ import org.lamiey.dto.BookingDTO
 import org.lamiey.dto.ErrorResponseDTO
 import org.lamiey.entity.Booking
 import org.lamiey.repository.BookingRepository
+import java.time.LocalDateTime
 
 @ApplicationScoped
 @WithSession
@@ -31,37 +32,31 @@ class BookingService @Inject constructor(
     fun createBooking(bookingDTO: BookingDTO): Uni<Booking> {
         val vehicleId = retrieveVehicleIdFromDTO(bookingDTO)
         val userId = retrieveUserIdFromDTO(bookingDTO)
-        validateBookingDates(bookingDTO)
 
-        val vehicleUni = vehicleService.getVehicleById(vehicleId)
-        val userUni = userService.getUserById(userId)
+        return validateBookingDates(bookingDTO)
+            .chain { _ ->
+                vehicleService.getVehicleById(vehicleId)
+                    .chain { vehicleEntity ->
+                        userService.getUserById(userId)
+                            .chain { userEntity ->
+                                val booking = Booking().apply {
+                                    vehicle = vehicleEntity
+                                    user = userEntity
+                                    startDate = bookingDTO.startDate
+                                    endDate = bookingDTO.endDate
+                                }
 
-//        return Uni.combine().all().unis(
-//            vehicleUni, userUni
-//        )
-//            .with { vehicleEntity, userEntity ->
-//                // Create the Booking object after both entities have been fetched
-//                val booking = Booking().apply {
-//                    this.vehicle = vehicleEntity
-//                    this.user = userEntity
-//                    this.startDate = bookingDTO.startDate
-//                    this.endDate = bookingDTO.endDate
-//                }
-//
-//                // Persist the booking
-//                bookingRepository.persist(booking)
-//
-//                // Return the booking
-//                booking
-//            }
-        return TODO()
+                                bookingRepository.persist(booking)
+                            }
+                    }
+            }
     }
 
     fun deleteBooking(bookingDTO: BookingDTO): Uni<Void> {
         val bookingId = retrieveBookingIdFromDTO(bookingDTO)
 
         return bookingRepository.findById(bookingId)
-            .onItem().transformToUni { booking ->
+            .chain { booking ->
                 if (booking == null) {
                     throw WebApplicationException(
                         Response.noContent().build()
@@ -99,7 +94,8 @@ class BookingService @Inject constructor(
         )
     //endregion
 
-    private fun validateBookingDates(bookingDTO: BookingDTO) {
+    //region CHECKS
+    private fun validateBookingDates(bookingDTO: BookingDTO): Uni<Void?> {
         val startDate = bookingDTO.startDate
             ?: throw WebApplicationException(
                 Response
@@ -124,5 +120,28 @@ class BookingService @Inject constructor(
                     .build()
             )
         }
+
+        val vehicleId = retrieveVehicleIdFromDTO(bookingDTO)
+
+        return isVehicleBooked(vehicleId, startDate, endDate)
+            .map { isBooked ->
+                if (isBooked) {
+                    throw WebApplicationException(
+                        Response
+                            .status(Response.Status.BAD_REQUEST)
+                            .entity(ErrorResponseDTO("Vehicle is already booked in the specific period"))
+                            .build()
+                    )
+                }
+            }
+            .replaceWithVoid()
     }
+
+    private fun isVehicleBooked(
+        vehicleId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Uni<Boolean> = bookingRepository.getBookingsByVehicleIdInDateRange(vehicleId, startDate, endDate)
+        .map { bookings -> bookings.isNotEmpty() }
+    //endregion
 }
