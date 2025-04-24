@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 
-    @Column(name = "email", nullable = false) var email: String? = null
+    @Column(name = "email", nullable = false, unique = true) var email: String? = null
 
     @Column(name = "first_name") var firstName: String? = null
 

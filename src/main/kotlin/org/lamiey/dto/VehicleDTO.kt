@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 
 data class VehicleDTO(
         @JsonProperty("id")
-        @field:Schema(description = "The unique identifier of the vehicle", defaultValue = "0")
+        @field:Schema(description = "The unique identifier of the vehicle", defaultValue = "1")
         var id: Long? = null,
 
         @JsonProperty("vin")
