@@ -15,6 +15,9 @@ class VehicleResource @Inject constructor(
 ) {
     // region GETTER
     @GET
+    fun getVehicles(): Uni<List<Vehicle>> = vehicleService.getVehicles()
+
+    @GET
     @Path("/page")
     fun getVehiclesByPage(
             @RestQuery("pageNumber") @DefaultValue("0") pageNumber: Int,

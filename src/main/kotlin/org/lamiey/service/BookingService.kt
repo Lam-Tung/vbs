@@ -22,6 +22,8 @@ class BookingService @Inject constructor(
     private val userService: UserService
 ) {
     //region GETTER
+    fun getBookings(): Uni<List<Booking>> = bookingRepository.findAll().list()
+
     fun getBookingsByPage(pageNumber: Int, pageSize: Int): Uni<List<Booking>> =
         bookingRepository.getBookingsByPage(pageNumber, pageSize)
 

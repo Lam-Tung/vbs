@@ -19,6 +19,8 @@ class UserService @Inject constructor(
     private val userRepository: UserRepository
 ) {
     // region GETTER
+    fun getUsers(): Uni<List<User>> = userRepository.findAll().list()
+
     fun getUsersByPage(pageNumber: Int, pageSize: Int): Uni<List<User>> =
         userRepository.getUsersByPage(pageNumber, pageSize)
 

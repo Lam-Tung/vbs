@@ -15,6 +15,9 @@ class UserResource @Inject constructor(
 ) {
     // region GETTER
     @GET
+    fun getUsers(): Uni<List<User>> = userService.getUsers()
+
+    @GET
     @Path("/page")
     fun getUsersByPage(
         @RestQuery("pageNumber") @DefaultValue("0") pageNumber: Int,

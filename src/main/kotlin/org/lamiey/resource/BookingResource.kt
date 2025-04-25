@@ -15,6 +15,9 @@ class BookingResource @Inject constructor(
 ) {
     // region GETTER
     @GET
+    fun getBookings(): Uni<List<Booking>> = bookingService.getBookings()
+
+    @GET
     @Path("/page")
     fun getBookingsByPage(
         @RestQuery("pageNumber") @DefaultValue("0") pageNumber: Int,
