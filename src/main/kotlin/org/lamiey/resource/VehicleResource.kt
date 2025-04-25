@@ -9,7 +9,7 @@ import org.lamiey.dto.VehicleDTO
 import org.lamiey.entity.Vehicle
 import org.lamiey.service.VehicleService
 
-@Path("/api/vehicle")
+@Path("/vehicle")
 class VehicleResource @Inject constructor(
     private val vehicleService: VehicleService
 ) {
