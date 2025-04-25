@@ -3,6 +3,7 @@ package org.lamiey.resource
 import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.ws.rs.*
+import org.jboss.resteasy.reactive.ResponseStatus
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestQuery
 import org.lamiey.dto.VehicleDTO
@@ -32,6 +33,7 @@ class VehicleResource @Inject constructor(
 
     // region CRUD
     @POST
+    @ResponseStatus(201)
     fun createVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> = vehicleService.createVehicle(vehicleDTO)
 
     @PUT

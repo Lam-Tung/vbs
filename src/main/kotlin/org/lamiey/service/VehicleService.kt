@@ -42,8 +42,8 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
             }
             .chain { vehicle ->
                 vehicleRepository.persist(vehicle)
-                    .map { persistedVehicle ->
-                        persistedVehicle
+                    .map { createdVehicle ->
+                        createdVehicle
                     }
             }
     }
