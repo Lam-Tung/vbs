@@ -21,31 +21,53 @@ class VehicleResourceTest {
     @InjectMock
     lateinit var vehicleService: VehicleService
 
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+
+    private fun getMockVehicle(): Vehicle = Vehicle().apply {
+        id = 1
+        vin = "WAUVFAFH0AN008060"
+        licensePlate = "A-A-1111"
+        name = "Audi A5"
+        manufacturer = "Audi"
+        model = "A5"
+        created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+        updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+    }
+
+    private fun getMockVehicles(): List<Vehicle> = listOf(
+        Vehicle().apply {
+            id = 1
+            vin = "WAUVFAFH0AN008060"
+            licensePlate = "A-A-1111"
+            name = "Audi A5"
+            manufacturer = "Audi"
+            model = "A5"
+            created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+            updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+        },
+        Vehicle().apply {
+            id = 2
+            vin = "WBAEP33403PE91635"
+            licensePlate = "B-B-2222"
+            name = "BMW 3 Series"
+            manufacturer = "BMW"
+            model = "3 Series"
+            created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+            updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
+        },
+    )
+
+    private fun getMockVehicleDTO(): VehicleDTO = VehicleDTO(
+        vin = "WAUVFAFH0AN008060",
+        licensePlate = "A-A-1111",
+        name = "Audi A5",
+        manufacturer = "Audi",
+        model = "A5"
+    )
+
     @Test
     fun test_getVehicles_ok() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val mockVehicles = listOf(
-            Vehicle().apply {
-                id = 1
-                vin = "WAUVFAFH0AN008060"
-                licensePlate = "A-A-1111"
-                name = "Audi A5"
-                manufacturer = "Audi"
-                model = "A5"
-                created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-                updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            },
-            Vehicle().apply {
-                id = 2
-                vin = "WBAEP33403PE91635"
-                licensePlate = "B-B-2222"
-                name = "BMW 3 Series"
-                manufacturer = "BMW"
-                model = "3 Series"
-                created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-                updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            },
-        )
+        val mockVehicles = getMockVehicles()
 
         Mockito.`when`(vehicleService.getVehicles())
             .thenReturn(Uni.createFrom().item(mockVehicles))
@@ -93,29 +115,7 @@ class VehicleResourceTest {
 
     @Test
     fun test_getVehiclesByPage_ok() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val mockVehiclesPage = listOf(
-            Vehicle().apply {
-                id = 1
-                vin = "WAUVFAFH0AN008060"
-                licensePlate = "A-A-1111"
-                name = "Audi A5"
-                manufacturer = "Audi"
-                model = "A5"
-                created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-                updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            },
-            Vehicle().apply {
-                id = 2
-                vin = "WBAEP33403PE91635"
-                licensePlate = "B-B-2222"
-                name = "BMW 3 Series"
-                manufacturer = "BMW"
-                model = "3 Series"
-                created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-                updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            },
-        )
+        val mockVehiclesPage = getMockVehicles()
 
         Mockito.`when`(vehicleService.getVehiclesByPage(0, 5))
             .thenReturn(Uni.createFrom().item(mockVehiclesPage))
@@ -163,17 +163,7 @@ class VehicleResourceTest {
 
     @Test
     fun test_getVehicleById_ok() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val mockVehicle = Vehicle().apply {
-            id = 1
-            vin = "WAUVFAFH0AN008060"
-            licensePlate = "A-A-1111"
-            name = "Audi A5"
-            manufacturer = "Audi"
-            model = "A5"
-            created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-        }
+        val mockVehicle = getMockVehicle()
 
         Mockito.`when`(vehicleService.getVehicleById(1))
             .thenReturn(Uni.createFrom().item(mockVehicle))
@@ -197,9 +187,11 @@ class VehicleResourceTest {
     @Test
     fun test_getVehicleById_noContent() {
         Mockito.`when`(vehicleService.getVehicleById(1))
-            .thenThrow(WebApplicationException(
-                Response.noContent().build()
-            ))
+            .thenThrow(
+                WebApplicationException(
+                    Response.noContent().build()
+                )
+            )
 
         RestAssured.given()
             .contentType(ContentType.JSON)
@@ -211,24 +203,8 @@ class VehicleResourceTest {
 
     @Test
     fun test_createVehicle_ok() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val mockVehicle = Vehicle().apply {
-            id = 1
-            vin = "WAUVFAFH0AN008060"
-            licensePlate = "A-A-1111"
-            name = "Audi A5"
-            manufacturer = "Audi"
-            model = "A5"
-            created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-            updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
-        }
-        val mockVehicleDTO = VehicleDTO(
-            vin = "WAUVFAFH0AN008060",
-            licensePlate = "A-A-1111",
-            name = "Audi A5",
-            manufacturer = "Audi",
-            model = "A5"
-        )
+        val mockVehicle = getMockVehicle()
+        val mockVehicleDTO = getMockVehicleDTO()
 
         Mockito.`when`(vehicleService.createVehicle(mockVehicleDTO))
             .thenReturn(Uni.createFrom().item(mockVehicle))
