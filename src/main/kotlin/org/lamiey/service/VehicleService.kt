@@ -28,7 +28,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     // region CRUD
     fun createVehicle(vehicleDTO: VehicleDTO): Uni<Vehicle> {
         val vehicleVin = retrieveVehicleVinFromDTO(vehicleDTO)
-        validateVin(vehicleVin)
+        validateVinFormat(vehicleVin)
 
         return vinAlreadyExists(vehicleVin)
             .map {
@@ -96,7 +96,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
                 .build()
         )
 
-    private fun retrieveVehicleVinFromDTO(vehicleDTO: VehicleDTO): String = vehicleDTO.vin?.trim()
+    fun retrieveVehicleVinFromDTO(vehicleDTO: VehicleDTO): String = vehicleDTO.vin?.trim()
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
@@ -106,7 +106,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     //endregion
 
     //region CHECKS
-    private fun validateVin(vin: String) {
+    fun validateVinFormat(vin: String) {
         if (vin.isEmpty() || vin.length != 17) {
             throw WebApplicationException(
                 Response

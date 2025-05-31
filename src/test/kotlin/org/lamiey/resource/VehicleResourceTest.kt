@@ -8,7 +8,9 @@ import io.smallrye.mutiny.Uni
 import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.core.Response
 import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.lamiey.dto.ErrorResponseDTO
 import org.lamiey.dto.VehicleDTO
 import org.lamiey.entity.Vehicle
 import org.lamiey.service.VehicleService
@@ -58,6 +60,7 @@ class VehicleResourceTest {
     )
 
     private fun getMockVehicleDTO(): VehicleDTO = VehicleDTO(
+        id = 1,
         vin = "WAUVFAFH0AN008060",
         licensePlate = "A-A-1111",
         name = "Audi A5",
@@ -171,7 +174,7 @@ class VehicleResourceTest {
         RestAssured.given()
             .contentType(ContentType.JSON)
             .`when`()
-            .get("/vehicle/id/1")
+            .get("/vehicle/1")
             .then()
             .statusCode(Response.Status.OK.statusCode)
             .body("id", equalTo(1))
@@ -196,7 +199,7 @@ class VehicleResourceTest {
         RestAssured.given()
             .contentType(ContentType.JSON)
             .`when`()
-            .get("/vehicle/id/1")
+            .get("/vehicle/1")
             .then()
             .statusCode(Response.Status.NO_CONTENT.statusCode)
     }
@@ -224,5 +227,243 @@ class VehicleResourceTest {
             .body("model", equalTo("A5"))
             .body("created", equalTo("2025-04-25T08:14:59.666"))
             .body("updated", equalTo("2025-04-25T08:14:59.666"))
+    }
+
+    @Test
+    fun test_createVehicle_badRequest_shortVin() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.vin = "POE"
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Invalid VIN: ${mockVehicleDTO.vin}"))
+                    .build()
+            )
+        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.createVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Invalid VIN: ${mockVehicleDTO.vin}")
+    }
+
+    @Test
+    fun test_createVehicle_badRequest_longVin() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.vin = "ASD1244fASDFGHH11111323GGGSS"
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Invalid VIN: ${mockVehicleDTO.vin}"))
+                    .build()
+            )
+        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.createVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Invalid VIN: ${mockVehicleDTO.vin}")
+    }
+
+    @Test
+    fun test_createVehicle_badRequest_missingVin() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.vin = null
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Request is missing VIN"))
+                    .build()
+            )
+        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.createVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Request is missing VIN")
+    }
+
+    @Test
+    fun test_createVehicle_badRequest_emptyVin() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.vin = ""
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Invalid VIN: "))
+                    .build()
+            )
+        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.createVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Invalid VIN: ")
+    }
+
+    @Test
+    fun test_updateVehicle_ok() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        val updatedVehicle = Vehicle().apply {
+            vin = mockVehicleDTO.vin
+            licensePlate = mockVehicleDTO.licensePlate?.trim()
+            name = mockVehicleDTO.name?.trim()
+            manufacturer = mockVehicleDTO.manufacturer?.trim()
+            model = mockVehicleDTO.model?.trim()
+        }
+
+        // Mock the behavior of updateVehicle to return the updated vehicle
+        Mockito.`when`(vehicleService.updateVehicle(mockVehicleDTO))
+            .thenReturn(Uni.createFrom().item(updatedVehicle))
+
+        RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(mockVehicleDTO)
+            .`when`()
+            .put("/vehicle")
+            .then()
+            .statusCode(Response.Status.OK.statusCode)
+            .body("vin", equalTo("WAUVFAFH0AN008060"))
+            .body("licensePlate", equalTo("A-A-1111"))
+            .body("name", equalTo("Audi A5"))
+            .body("manufacturer", equalTo("Audi"))
+            .body("model", equalTo("A5"))
+    }
+
+    @Test
+    fun test_updateVehicle_badRequest_missingId() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.id = null
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Request is missing ID"))
+                    .build()
+            )
+        ).`when`(vehicleService).updateVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.updateVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Request is missing ID")
+    }
+
+    @Test
+    fun test_updateVehicle_notFound() {
+        val mockVehicleDTO = getMockVehicleDTO()
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(ErrorResponseDTO("Vehicle with ID ${mockVehicleDTO.id} not found"))
+                    .build()
+            )
+        ).`when`(vehicleService).updateVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.updateVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.NOT_FOUND.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Vehicle with ID ${mockVehicleDTO.id} not found")
+    }
+
+    @Test
+    fun test_deleteVehicle_ok() {
+        val mockVehicleDTO = getMockVehicleDTO()
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.NO_CONTENT)
+                    .build()
+            )
+        ).`when`(vehicleService).deleteVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.deleteVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.NO_CONTENT.statusCode)
+    }
+
+    @Test
+    fun test_deleteVehicle_badRequest_missingId() {
+        val mockVehicleDTO = getMockVehicleDTO()
+        mockVehicleDTO.id = null
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ErrorResponseDTO("Request is missing ID"))
+                    .build()
+            )
+        ).`when`(vehicleService).deleteVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.deleteVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Request is missing ID")
+    }
+
+    @Test
+    fun test_deleteVehicle_notFound() {
+        val mockVehicleDTO = getMockVehicleDTO()
+
+        Mockito.doThrow(
+            WebApplicationException(
+                Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(ErrorResponseDTO("Vehicle with ID ${mockVehicleDTO.id} not found"))
+                    .build()
+            )
+        ).`when`(vehicleService).deleteVehicle(mockVehicleDTO)
+
+        val exception = assertThrows(WebApplicationException::class.java) {
+            vehicleService.deleteVehicle(mockVehicleDTO)
+        }
+
+        assert(exception.response.status == Response.Status.NOT_FOUND.statusCode)
+        assert(exception.response.entity is ErrorResponseDTO)
+        val errorResponse = exception.response.entity as ErrorResponseDTO
+        assert(errorResponse.message == "Vehicle with ID ${mockVehicleDTO.id} not found")
     }
 }

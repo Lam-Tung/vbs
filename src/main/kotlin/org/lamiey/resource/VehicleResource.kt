@@ -26,7 +26,7 @@ class VehicleResource @Inject constructor(
     ): Uni<List<Vehicle>> = vehicleService.getVehiclesByPage(pageNumber, pageSize)
 
     @GET
-    @Path("/id/{id}")
+    @Path("/{id}")
     fun getVehicleById(@RestPath("id") @DefaultValue("1") id: Long): Uni<Vehicle> =
         vehicleService.getVehicleById(id)
     // endregion
