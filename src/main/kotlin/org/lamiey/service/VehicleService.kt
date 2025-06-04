@@ -88,11 +88,11 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
     // endregion
 
     //region RETRIEVE VALUES FROM DTO
-    private fun retrieveVehicleIdFromDTO(vehicleDTO: VehicleDTO): Long = vehicleDTO.id
+    fun retrieveVehicleIdFromDTO(vehicleDTO: VehicleDTO): Long = vehicleDTO.id
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity("Request is missing ID")
+                .entity(ErrorResponseDTO("Request is missing ID"))
                 .build()
         )
 
@@ -100,7 +100,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         ?: throw WebApplicationException(
             Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity("Request is missing VIN")
+                .entity(ErrorResponseDTO("Request is missing VIN"))
                 .build()
         )
     //endregion
@@ -117,7 +117,7 @@ class VehicleService(private val vehicleRepository: VehicleRepository) {
         }
     }
 
-    private fun vinAlreadyExists(vin: String): Uni<Boolean> = vehicleRepository.getByVin(vin)
+    fun vinAlreadyExists(vin: String): Uni<Boolean> = vehicleRepository.getByVin(vin)
         .chain { existingVehicle ->
             if (existingVehicle != null) {
                 throw WebApplicationException(

@@ -69,7 +69,7 @@ class VehicleResourceTest {
     )
 
     @Test
-    fun test_getVehicles_ok() {
+    fun test_getVehicles_success() {
         val mockVehicles = getMockVehicles()
 
         Mockito.`when`(vehicleService.getVehicles())
@@ -117,7 +117,7 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_getVehiclesByPage_ok() {
+    fun test_getVehiclesByPage_success() {
         val mockVehiclesPage = getMockVehicles()
 
         Mockito.`when`(vehicleService.getVehiclesByPage(0, 5))
@@ -165,7 +165,7 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_getVehicleById_ok() {
+    fun test_getVehicleById_success() {
         val mockVehicle = getMockVehicle()
 
         Mockito.`when`(vehicleService.getVehicleById(1))
@@ -205,7 +205,7 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_createVehicle_ok() {
+    fun test_createVehicle_success() {
         val mockVehicle = getMockVehicle()
         val mockVehicleDTO = getMockVehicleDTO()
 
@@ -326,7 +326,7 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_updateVehicle_ok() {
+    fun test_updateVehicle_success() {
         val mockVehicleDTO = getMockVehicleDTO()
         val updatedVehicle = Vehicle().apply {
             vin = mockVehicleDTO.vin
@@ -402,7 +402,7 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_deleteVehicle_ok() {
+    fun test_deleteVehicle_success() {
         val mockVehicleDTO = getMockVehicleDTO()
 
         Mockito.doThrow(
