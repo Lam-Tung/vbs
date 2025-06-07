@@ -4,6 +4,7 @@ import io.quarkus.test.InjectMock
 import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter
 import io.quarkus.test.junit.QuarkusTest
 import io.quarkus.test.vertx.RunOnVertxContext
+import io.smallrye.mutiny.Uni
 import jakarta.inject.Inject
 import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.core.Response
@@ -14,6 +15,7 @@ import org.lamiey.dto.ErrorResponseDTO
 import org.lamiey.dto.VehicleDTO
 import org.lamiey.entity.Vehicle
 import org.lamiey.repository.VehicleRepository
+import org.mockito.Mockito
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -46,6 +48,8 @@ class VehicleServiceTest {
         created = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
         updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
     }
+
+    private fun getMockVin(): String = getMockVehicle().vin!!
 
     private fun getMockVehicles(): List<Vehicle> = listOf(
         Vehicle().apply {
@@ -96,7 +100,7 @@ class VehicleServiceTest {
         val mockVehicleDTO = getMockVehicleDTO()
         val vin = vehicleService.retrieveVehicleVinFromDTO(mockVehicleDTO)
 
-        assertEquals("WAUVFAFH0AN008060", vin)
+        assertEquals(getMockVin(), vin)
     }
 
     @Test
@@ -114,7 +118,7 @@ class VehicleServiceTest {
 
     @Test
     fun test_validateVinFormat_validVin() {
-        val validVin = "WAUVFAFH0AN008060"
+        val validVin = getMockVin()
 
         vehicleService.validateVinFormat(validVin)
     }
@@ -158,9 +162,27 @@ class VehicleServiceTest {
     @Test
     @RunOnVertxContext
     fun test_vinAlreadyExist_success(asserter: TransactionalUniAsserter) {
-        val vin = "1FAHP36N35W232704"
+        val vin = getMockVin()
+
+        Mockito.`when`(vehicleRepository.getByVin(vin))
+            .thenReturn(Uni.createFrom().nullItem())
 
         val result = vehicleService.vinAlreadyExists(vin)
         asserter.assertFalse { result }
+    }
+
+    @Test
+    @RunOnVertxContext
+    fun test_vinAlreadyExist_vinExists(asserter: TransactionalUniAsserter) {
+        val vin = getMockVin()
+        val mockVehicle = getMockVehicle()
+
+        Mockito.`when`(vehicleRepository.getByVin(vin))
+            .thenReturn(Uni.createFrom().item(mockVehicle))
+
+        asserter.assertFailedWith(
+            { vehicleService.vinAlreadyExists(vin) },
+            WebApplicationException::class.java
+        )
     }
 }
