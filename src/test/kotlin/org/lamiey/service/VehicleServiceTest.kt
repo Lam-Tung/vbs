@@ -1,5 +1,6 @@
 package org.lamiey.service
 
+import io.quarkus.hibernate.reactive.panache.kotlin.PanacheQuery
 import io.quarkus.test.InjectMock
 import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter
 import io.quarkus.test.junit.QuarkusTest
@@ -22,7 +23,7 @@ import java.time.format.DateTimeFormatter
 @QuarkusTest
 class VehicleServiceTest {
     @InjectMock
-    lateinit var vehicleRepository: VehicleRepository
+    lateinit var mockVehicleRepository: VehicleRepository
 
     @Inject
     lateinit var vehicleService: VehicleService
@@ -73,6 +74,61 @@ class VehicleServiceTest {
             updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
         },
     )
+
+    @Test
+    @RunOnVertxContext
+    fun test_getVehicles_success(asserter: TransactionalUniAsserter) {
+        val mockVehicles = getMockVehicles()
+        val mockQuery = Mockito.mock(PanacheQuery::class.java) as PanacheQuery<Vehicle>
+
+        Mockito.`when`(mockVehicleRepository.findAll()).thenReturn(mockQuery)
+        Mockito.`when`(mockQuery.list()).thenReturn(Uni.createFrom().item(mockVehicles))
+
+        asserter.assertEquals({ vehicleService.getVehicles() }, mockVehicles)
+    }
+
+    @Test
+    @RunOnVertxContext
+    fun test_getVehicles_empty(asserter: TransactionalUniAsserter) {
+        val mockVehiclesEmpty = listOf<Vehicle>()
+        val mockQuery = Mockito.mock(PanacheQuery::class.java) as PanacheQuery<Vehicle>
+
+        Mockito.`when`(mockVehicleRepository.findAll()).thenReturn(mockQuery)
+        Mockito.`when`(mockQuery.list()).thenReturn(Uni.createFrom().item(mockVehiclesEmpty))
+        asserter.assertEquals({ vehicleService.getVehicles() }, mockVehiclesEmpty)
+    }
+
+    @Test
+    @RunOnVertxContext
+    fun test_getVehiclesByPage_success(asserter: TransactionalUniAsserter) {
+        val mockVehicles = getMockVehicles()
+        val pageNumber = 0
+        val pageSize = 10
+
+        Mockito.`when`(mockVehicleRepository.getVehiclesByPage(pageNumber, pageSize))
+            .thenReturn(Uni.createFrom().item(mockVehicles))
+
+        asserter.assertEquals(
+            { vehicleService.getVehiclesByPage(pageNumber, pageSize) },
+            mockVehicles
+        )
+    }
+
+    @Test
+    @RunOnVertxContext
+    fun test_getVehiclesByPage_empty(asserter: TransactionalUniAsserter) {
+        val mockVehiclesEmpty = listOf<Vehicle>()
+        val pageNumber = 0
+        val pageSize = 10
+
+        Mockito.`when`(mockVehicleRepository.getVehiclesByPage(pageNumber, pageSize))
+            .thenReturn(Uni.createFrom().item(mockVehiclesEmpty))
+
+        asserter.assertEquals(
+            { vehicleService.getVehiclesByPage(pageNumber, pageSize) },
+            mockVehiclesEmpty
+        )
+    }
 
     @Test
     fun test_retrieveVehicleIdFromDTO_success() {
@@ -164,7 +220,7 @@ class VehicleServiceTest {
     fun test_vinAlreadyExist_success(asserter: TransactionalUniAsserter) {
         val vin = getMockVin()
 
-        Mockito.`when`(vehicleRepository.getByVin(vin))
+        Mockito.`when`(mockVehicleRepository.getByVin(vin))
             .thenReturn(Uni.createFrom().nullItem())
 
         val result = vehicleService.vinAlreadyExists(vin)
@@ -177,7 +233,7 @@ class VehicleServiceTest {
         val vin = getMockVin()
         val mockVehicle = getMockVehicle()
 
-        Mockito.`when`(vehicleRepository.getByVin(vin))
+        Mockito.`when`(mockVehicleRepository.getByVin(vin))
             .thenReturn(Uni.createFrom().item(mockVehicle))
 
         asserter.assertFailedWith(
