@@ -8,10 +8,6 @@ data class VehicleDTO(
         @field:Schema(description = "The unique identifier of the vehicle", defaultValue = "1")
         var id: Long? = null,
 
-        @JsonProperty("vin")
-        @field:Schema(description = "The Vehicle Identification Number", defaultValue = "JT6HF10U3Y0133607")
-        var vin: String? = null,
-
         @JsonProperty("licensePlate")
         @field:Schema(description = "The license plate of the vehicle", defaultValue = "B-BB-1234")
         var licensePlate: String? = null,

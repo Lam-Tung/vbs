@@ -35,7 +35,6 @@ class VehicleServiceTest {
 
     private fun getMockVehicleDTO(): VehicleDTO = VehicleDTO(
         id = 1,
-        vin = "WAUVFAFH0AN008060",
         licensePlate = "A-A-1111",
         name = "Audi A5",
         manufacturer = "Audi",
@@ -44,7 +43,6 @@ class VehicleServiceTest {
 
     private fun getMockVehicle(): Vehicle = Vehicle().apply {
         id = 1
-        vin = "WAUVFAFH0AN008060"
         licensePlate = "A-A-1111"
         name = "Audi A5"
         manufacturer = "Audi"
@@ -53,12 +51,9 @@ class VehicleServiceTest {
         updated = LocalDateTime.parse("2025-04-25 08:14:59.666", formatter)
     }
 
-    private fun getMockVin(): String = getMockVehicle().vin!!
-
     private fun getMockVehicles(): List<Vehicle> = listOf(
         Vehicle().apply {
             id = 1
-            vin = "WAUVFAFH0AN008060"
             licensePlate = "A-A-1111"
             name = "Audi A5"
             manufacturer = "Audi"
@@ -68,7 +63,6 @@ class VehicleServiceTest {
         },
         Vehicle().apply {
             id = 2
-            vin = "WBAEP33403PE91635"
             licensePlate = "B-B-2222"
             name = "BMW 3 Series"
             manufacturer = "BMW"
@@ -191,97 +185,6 @@ class VehicleServiceTest {
         assertEquals(Response.Status.BAD_REQUEST.statusCode, exception.response.status)
         val errorResponse = exception.response.entity as ErrorResponseDTO
         assertEquals("Request is missing ID", errorResponse.message)
-    }
-
-    @Test
-    fun test_retrieveVehicleVinFromDTO_success() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        val vin = vehicleService.retrieveVehicleVinFromDTO(mockVehicleDTO)
-
-        assertEquals(getMockVin(), vin)
-    }
-
-    @Test
-    fun test_retrieveVehicleVinFromDTO_missingVin() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        mockVehicleDTO.vin = null
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.retrieveVehicleVinFromDTO(mockVehicleDTO)
-        }
-        assertEquals(Response.Status.BAD_REQUEST.statusCode, exception.response.status)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assertEquals("Request is missing VIN", errorResponse.message)
-    }
-
-    @Test
-    fun test_validateVinFormat_validVin() {
-        val validVin = getMockVin()
-
-        vehicleService.validateVinFormat(validVin)
-    }
-
-    @Test
-    fun test_validateVinFormat_emptyVin() {
-        val emptyVin = ""
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.validateVinFormat(emptyVin)
-        }
-        assertEquals(Response.Status.BAD_REQUEST.statusCode, exception.response.status)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assertEquals("Invalid VIN: $emptyVin", errorResponse.message)
-    }
-
-    @Test
-    fun test_validateVinFormat_shortVin() {
-        val shortVin = "WAUVFAF"
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.validateVinFormat(shortVin)
-        }
-        assertEquals(Response.Status.BAD_REQUEST.statusCode, exception.response.status)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assertEquals("Invalid VIN: $shortVin", errorResponse.message)
-    }
-
-    @Test
-    fun test_validateVinFormat_longVin() {
-        val longVin = "WAUVFAFH0AN0080601"
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.validateVinFormat(longVin)
-        }
-        assertEquals(Response.Status.BAD_REQUEST.statusCode, exception.response.status)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assertEquals("Invalid VIN: $longVin", errorResponse.message)
-    }
-
-    @Test
-    @RunOnVertxContext
-    fun test_vinAlreadyExist_success(asserter: TransactionalUniAsserter) {
-        val vin = getMockVin()
-
-        Mockito.`when`(vehicleRepository.getByVin(vin))
-            .thenReturn(Uni.createFrom().nullItem())
-
-        val result = vehicleService.vinAlreadyExists(vin)
-        asserter.assertFalse { result }
-    }
-
-    @Test
-    @RunOnVertxContext
-    fun test_vinAlreadyExist_vinExists(asserter: TransactionalUniAsserter) {
-        val vin = getMockVin()
-        val mockVehicle = getMockVehicle()
-
-        Mockito.`when`(vehicleRepository.getByVin(vin))
-            .thenReturn(Uni.createFrom().item(mockVehicle))
-
-        asserter.assertFailedWith(
-            { vehicleService.vinAlreadyExists(vin) },
-            WebApplicationException::class.java
-        )
     }
     //endregion
 }
