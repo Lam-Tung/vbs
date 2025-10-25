@@ -30,7 +30,6 @@ class VehicleResourceTest {
 
     private fun getMockVehicle(): Vehicle = Vehicle().apply {
         id = 1
-        vin = "WAUVFAFH0AN008060"
         licensePlate = "A-A-1111"
         name = "Audi A5"
         manufacturer = "Audi"
@@ -42,7 +41,6 @@ class VehicleResourceTest {
     private fun getMockVehicles(): List<Vehicle> = listOf(
         Vehicle().apply {
             id = 1
-            vin = "WAUVFAFH0AN008060"
             licensePlate = "A-A-1111"
             name = "Audi A5"
             manufacturer = "Audi"
@@ -52,7 +50,6 @@ class VehicleResourceTest {
         },
         Vehicle().apply {
             id = 2
-            vin = "WBAEP33403PE91635"
             licensePlate = "B-B-2222"
             name = "BMW 3 Series"
             manufacturer = "BMW"
@@ -64,7 +61,6 @@ class VehicleResourceTest {
 
     private fun getMockVehicleDTO(): VehicleDTO = VehicleDTO(
         id = 1,
-        vin = "WAUVFAFH0AN008060",
         licensePlate = "A-A-1111",
         name = "Audi A5",
         manufacturer = "Audi",
@@ -88,7 +84,6 @@ class VehicleResourceTest {
             .statusCode(Response.Status.OK.statusCode)
             .body("size()", equalTo(mockVehicles.size))
             .body("[0].id", equalTo(1))
-            .body("[0].vin", equalTo(mockVehicles[0].vin))
             .body("[0].licensePlate", equalTo(mockVehicles[0].licensePlate))
             .body("[0].name", equalTo(mockVehicles[0].name))
             .body("[0].manufacturer", equalTo(mockVehicles[0].manufacturer))
@@ -96,7 +91,6 @@ class VehicleResourceTest {
             .body("[0].created", equalTo("2025-04-25T08:14:59.666"))
             .body("[0].updated", equalTo("2025-04-25T08:14:59.666"))
             .body("[1].id", equalTo(2))
-            .body("[1].vin", equalTo(mockVehicles[1].vin))
             .body("[1].licensePlate", equalTo(mockVehicles[1].licensePlate))
             .body("[1].name", equalTo(mockVehicles[1].name))
             .body("[1].manufacturer", equalTo(mockVehicles[1].manufacturer))
@@ -136,7 +130,6 @@ class VehicleResourceTest {
             .statusCode(Response.Status.OK.statusCode)
             .body("size()", equalTo(mockVehiclesPage.size))
             .body("[0].id", equalTo(1))
-            .body("[0].vin", equalTo(mockVehiclesPage[0].vin))
             .body("[0].licensePlate", equalTo(mockVehiclesPage[0].licensePlate))
             .body("[0].name", equalTo(mockVehiclesPage[0].name))
             .body("[0].manufacturer", equalTo(mockVehiclesPage[0].manufacturer))
@@ -144,7 +137,6 @@ class VehicleResourceTest {
             .body("[0].created", equalTo("2025-04-25T08:14:59.666"))
             .body("[0].updated", equalTo("2025-04-25T08:14:59.666"))
             .body("[1].id", equalTo(2))
-            .body("[1].vin", equalTo(mockVehiclesPage[1].vin))
             .body("[1].licensePlate", equalTo(mockVehiclesPage[1].licensePlate))
             .body("[1].name", equalTo(mockVehiclesPage[1].name))
             .body("[1].manufacturer", equalTo(mockVehiclesPage[1].manufacturer))
@@ -183,7 +175,6 @@ class VehicleResourceTest {
             .then()
             .statusCode(Response.Status.OK.statusCode)
             .body("id", equalTo(1))
-            .body("vin", equalTo(mockVehicle.vin))
             .body("licensePlate", equalTo(mockVehicle.licensePlate))
             .body("name", equalTo(mockVehicle.name))
             .body("manufacturer", equalTo(mockVehicle.manufacturer))
@@ -225,7 +216,6 @@ class VehicleResourceTest {
             .then()
             .statusCode(Response.Status.CREATED.statusCode)
             .body("id", equalTo(1))
-            .body("vin", equalTo(mockVehicle.vin))
             .body("licensePlate", equalTo(mockVehicle.licensePlate))
             .body("name", equalTo(mockVehicle.name))
             .body("manufacturer", equalTo(mockVehicle.manufacturer))
@@ -235,106 +225,9 @@ class VehicleResourceTest {
     }
 
     @Test
-    fun test_createVehicle_badRequest_shortVin() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        mockVehicleDTO.vin = "POE"
-
-        Mockito.doThrow(
-            WebApplicationException(
-                Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(ErrorResponseDTO("Invalid VIN: ${mockVehicleDTO.vin}"))
-                    .build()
-            )
-        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.createVehicle(mockVehicleDTO)
-        }
-
-        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
-        assert(exception.response.entity is ErrorResponseDTO)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assert(errorResponse.message == "Invalid VIN: ${mockVehicleDTO.vin}")
-    }
-
-    @Test
-    fun test_createVehicle_badRequest_longVin() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        mockVehicleDTO.vin = "ASD1244fASDFGHH11111323GGGSS"
-
-        Mockito.doThrow(
-            WebApplicationException(
-                Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(ErrorResponseDTO("Invalid VIN: ${mockVehicleDTO.vin}"))
-                    .build()
-            )
-        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.createVehicle(mockVehicleDTO)
-        }
-
-        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
-        assert(exception.response.entity is ErrorResponseDTO)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assert(errorResponse.message == "Invalid VIN: ${mockVehicleDTO.vin}")
-    }
-
-    @Test
-    fun test_createVehicle_badRequest_missingVin() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        mockVehicleDTO.vin = null
-
-        Mockito.doThrow(
-            WebApplicationException(
-                Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(ErrorResponseDTO("Request is missing VIN"))
-                    .build()
-            )
-        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.createVehicle(mockVehicleDTO)
-        }
-
-        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
-        assert(exception.response.entity is ErrorResponseDTO)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assert(errorResponse.message == "Request is missing VIN")
-    }
-
-    @Test
-    fun test_createVehicle_badRequest_emptyVin() {
-        val mockVehicleDTO = getMockVehicleDTO()
-        mockVehicleDTO.vin = ""
-
-        Mockito.doThrow(
-            WebApplicationException(
-                Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(ErrorResponseDTO("Invalid VIN: "))
-                    .build()
-            )
-        ).`when`(vehicleService).createVehicle(mockVehicleDTO)
-
-        val exception = assertThrows(WebApplicationException::class.java) {
-            vehicleService.createVehicle(mockVehicleDTO)
-        }
-
-        assert(exception.response.status == Response.Status.BAD_REQUEST.statusCode)
-        assert(exception.response.entity is ErrorResponseDTO)
-        val errorResponse = exception.response.entity as ErrorResponseDTO
-        assert(errorResponse.message == "Invalid VIN: ")
-    }
-
-    @Test
     fun test_updateVehicle_success() {
         val mockVehicleDTO = getMockVehicleDTO()
         val updatedVehicle = Vehicle().apply {
-            vin = mockVehicleDTO.vin
             licensePlate = mockVehicleDTO.licensePlate?.trim()
             name = mockVehicleDTO.name?.trim()
             manufacturer = mockVehicleDTO.manufacturer?.trim()
@@ -352,7 +245,6 @@ class VehicleResourceTest {
             .put("/vehicle")
             .then()
             .statusCode(Response.Status.OK.statusCode)
-            .body("vin", equalTo(updatedVehicle.vin))
             .body("licensePlate", equalTo(updatedVehicle.licensePlate))
             .body("name", equalTo(updatedVehicle.name))
             .body("manufacturer", equalTo(updatedVehicle.manufacturer))
